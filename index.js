@@ -31,8 +31,10 @@ async function run() {
 
     const db = client.db('bistrobd');
     const menuCollection = db.collection('menu');
+    const userCollection = db.collection('users');
     const reviewsCollection = db.collection('remenu');
     const cartCollection = db.collection('carts');
+
 
     // ROUTES
     app.get('/', (req, res) => {
@@ -49,6 +51,16 @@ async function run() {
         res.status(500).send({ error: 'Error fetching menu data' });
       }
     });
+
+    
+    //users related aPi 
+    app.post('/users' ,async(req,res) =>{
+      const user = req.body;
+      const result =await userCollection.insertOne(user).toArray()
+      res.send(result)
+
+
+    })
 
     app.get('/remenu', async (req, res) => {
       console.log('📥 GET /reviews called');
