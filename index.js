@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb"); // ✅
+const  jwt = require('jsonwebtoken');
 
 require("dotenv").config();
 
@@ -34,6 +35,15 @@ async function run() {
     const reviewsCollection = db.collection("remenu");
     const cartCollection = db.collection("carts");
 
+    //jwt related aPi
+    app.post('/jwt' ,async(req,res) =>{
+      const user = req.body;
+      const token = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET ,{
+        expiresIn: '1h'
+      })
+      res.send({token})
+    })
+
     // ROUTES
     app.get("/", (req, res) => {
       res.send("✅ Server is up and running!");
@@ -49,6 +59,27 @@ async function run() {
         res.status(500).send({ error: "Error fetching menu data" });
       }
     });
+    //menu reated aPi
+    app.patch('/users/admin/:id',async(req ,res) =>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const updateDoc = {
+        $set:{
+          role:'admin'
+        }
+
+      }
+      const result =await userCollection.updateOne(filter,updateDoc)
+      res.send(result)
+    })
+
+    //main delete
+    app.delete('/users/:id' ,async (req,res) =>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result=await userCollection.deleteOne(query)
+      res.send(result)
+    })
 
     // users related API
      app.get('/users' ,async (req,res) =>{
