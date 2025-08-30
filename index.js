@@ -43,6 +43,25 @@ async function run() {
       })
       res.send({token})
     })
+    
+    // middlewares 
+    const veryfytoken = (req,res,next ) =>{
+      console.log('inside veryfy token ', req.headers)
+      if(!req.headers.Authorization)
+          {return res.status(401).send({message:'unauthorize access'}) }
+      const token= req.headers.Authorization.split(' ')[1]
+      jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,decoded) =>{
+        if(err){
+          return res.status(401).send({message : 'un  access'})
+        }
+        req.decoded = decoded
+        next()
+      })
+      
+
+      
+        //   next()
+    }
 
     // ROUTES
     app.get("/", (req, res) => {
@@ -82,9 +101,25 @@ async function run() {
     })
 
     // users related API
-     app.get('/users' ,async (req,res) =>{
+     app.get('/users' ,veryfytoken, async (req,res) =>{
       const result = await userCollection.find().toArray()
       res.send(result)
+     })
+
+     app.get('/users/admin/:email',veryfytoken ,async(req,res) =>{
+      const email = req.params.email;
+      if(email !== req.decoded.email){
+        return res.status(403).send('forbidden  access')
+      }
+      const query = {email: email}
+      const user = await userCollection.findOne(query)
+      const isadmin = false;
+      if(user){
+        isadmin = user?.role === 'admin'
+
+      }
+      res.send({isadmin})
+
      })
 
     app.post("/users", async (req, res) => {
