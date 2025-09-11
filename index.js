@@ -36,7 +36,7 @@ async function run() {
     const cartCollection = db.collection("carts");
     const PaymentCollection = db.collection("Payment");
 
-    // ✅ JWT Login
+    //  JWT Login
     app.post("/jwt", async (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
@@ -45,7 +45,7 @@ async function run() {
       res.send({ token });
     });
 
-    // ✅ Middleware: Verify Token
+    //  Middleware: Verify Token
     const verifyToken = (req, res, next) => {
       const authHeader = req.headers.authorization;
       if (!authHeader) {
@@ -61,7 +61,7 @@ async function run() {
       });
     };
 
-    // ✅ Middleware: Verify Admin
+    //  Middleware: Verify Admin
     const verifyAdmin = async (req, res, next) => {
       const email = req.decoded.email;
       const query = { email: email };
@@ -74,7 +74,7 @@ async function run() {
       next();
     };
 
-    // ✅ Routes
+    //  Routes
     app.get("/", (req, res) => {
       res.send("✅ Server is up and running!");
     });
@@ -241,7 +241,7 @@ async function run() {
 
     console.log(amount, 'amount inside the intent');
 
-    // ✅ use paymentIntents (plural) not PaymentIntent
+    // use paymentIntents (plural) not PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
       currency: 'usd',
@@ -249,7 +249,7 @@ async function run() {
     });
 
     res.send({
-      clientSecret: paymentIntent.client_secret, // ✅ correct property
+      clientSecret: paymentIntent.client_secret, // correct property
     });
   } catch (error) {
     console.error("Stripe Error:", error.message);
@@ -282,9 +282,9 @@ app.post('/Payment',async (req,res) =>{
 
     // ✅ MongoDB Ping
     await client.db("admin").command({ ping: 1 });
-    console.log("✅ Successfully connected to MongoDB!");
+    console.log(" Successfully connected to MongoDB!");
   } catch (error) {
-    console.error("❌ MongoDB connection error:", error);
+    console.error(" MongoDB connection error:", error);
   }
 }
 
@@ -292,5 +292,5 @@ run().catch(console.dir);
 
 // Start Server
 app.listen(port, () => {
-  console.log(`🚀 Server running on port ${port}`);
+  console.log(` Server running on port ${port}`);
 });
